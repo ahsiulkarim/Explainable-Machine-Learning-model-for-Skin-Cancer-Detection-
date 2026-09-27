@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSE475 Machine Learning — Course Project Brief (Summer 2026)</title>
+<style>
+  :root{
+    --navy:#233343; --rust:#BD582C; --orange:#E78439; --blue:#2D5B8A;
+    --card:#FDF4EF; --peach:#FBE8DA; --green:#3C7A5A; --line:#e3d8cf; --gray:#666;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Carlito","Calibri","Segoe UI",system-ui,Arial,sans-serif;color:#1c2530;line-height:1.5;margin:0;background:#fff}
+  .page{max-width:none;margin:0;background:#fff;padding:30px clamp(18px,5vw,72px) 60px;box-shadow:none}
+  h1,h2,h3,h4{font-family:"Caladea","Cambria","Georgia",serif}
+  header.brief{text-align:center;border-bottom:2px solid var(--navy);padding-bottom:12px;margin-bottom:14px}
+  header.brief h1{color:var(--navy);margin:0 0 2px;font-size:1.8rem}
+  header.brief .sub{color:var(--rust);font-size:1.12rem;font-weight:bold}
+  header.brief .dept{margin-top:6px}
+  header.brief .attr{font-style:italic;font-size:.85rem;color:var(--gray);margin-top:4px}
+  h2{color:var(--navy);border-bottom:1px solid var(--line);padding-bottom:4px;margin-top:6px;font-size:1.4rem}
+  h3{color:var(--rust);font-size:1.06rem;margin:18px 0 6px}
+  p{margin:.5em 0}
+  a{color:var(--blue)}
+  code,.mono{font-family:"Consolas","SFMono-Regular",Menlo,monospace;font-size:.86em}
+  ul,ol{margin:.4em 0 .6em;padding-left:1.3em}
+  li{margin:2px 0}
+  .lead{background:var(--card);border-left:4px solid var(--rust);padding:12px 16px;border-radius:4px;margin:0 0 16px}
+  .tabbar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:4px;background:#fff;padding:8px 0;border-bottom:2px solid var(--rust);margin-bottom:18px}
+  .tab-btn{font:inherit;font-size:.86rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--navy);padding:6px 11px;border-radius:6px 6px 0 0;border-bottom:none;line-height:1.1}
+  .tab-btn:hover{background:var(--card)}
+  .tab-btn .n{color:var(--rust);font-weight:bold;margin-right:4px}
+  .tab-btn[aria-selected="true"]{background:var(--navy);color:#fff}
+  .tab-btn[aria-selected="true"] .n{color:var(--orange)}
+  .box{border-radius:5px;padding:10px 14px;margin:14px 0;border:1px solid}
+  .box .bt{font-family:"Caladea",serif;font-weight:bold;display:block;margin-bottom:5px}
+  .box.guard{background:var(--peach);border-color:var(--rust)} .box.guard .bt{color:var(--rust)}
+  .box.plain{background:#fff;border-color:var(--green)} .box.plain .bt{color:var(--green)}
+  .box.tip{background:var(--card);border-color:var(--navy)} .box.tip .bt{color:var(--navy)}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:6px 9px;vertical-align:top;text-align:left}
+  th{background:var(--rust);color:#fff;font-weight:bold}
+  tbody tr:nth-child(even){background:var(--card)}
+  .grid td,.grid th{text-align:center}
+  .grid td.rh{text-align:left;background:var(--navy);color:#fff;font-weight:bold}
+  .grid td.best{background:var(--peach);font-weight:bold}
+  .grid td.cell{background:var(--card)}
+  .flow{margin:14px 0}
+  .flow .step{border:1px solid var(--rust);background:var(--card);border-radius:5px;padding:10px 14px;margin:0 0 6px}
+  .flow .start,.flow .end{background:var(--navy);color:#fff;text-align:center;font-weight:bold;border-color:var(--navy)}
+  .flow .end{background:#fff;color:var(--navy);border:1px solid var(--green)}
+  .flow .step .t{color:var(--rust);font-weight:bold}
+  .flow .push{font-family:monospace;font-size:.8rem;color:var(--navy);display:block;margin-top:4px}
+  .flow .arrow{text-align:center;color:var(--navy);font-size:1.1rem;margin:-2px 0 4px}
+  .tracks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:14px 0}
+  .tracks .col h4{background:var(--navy);color:#fff;margin:0;padding:8px;border-radius:5px 5px 0 0;text-align:center;font-size:.95rem}
+  .tracks .taskcard{border:1px solid var(--rust);border-top:0;background:var(--card);padding:8px 10px;font-size:.82rem}
+  .tracks .taskcard:last-child{border-radius:0 0 5px 5px}
+  .tracks .taskcard .tt{color:var(--rust);font-weight:bold;display:block;margin-bottom:2px}
+  .tracks .taskcard ul{margin:0;padding-left:1.1em}
+  .tree{background:#fff;border:1px solid var(--navy);border-radius:5px;padding:12px 14px;font-family:monospace;font-size:.82rem;white-space:pre;overflow-x:auto}
+  .tree .c{color:var(--navy)}
+  .footer{margin-top:40px;border-top:2px solid var(--rust);padding-top:8px;font-size:.8rem;color:var(--navy);display:flex;justify-content:space-between}
+  .tabbed .tab-panel{display:none}
+  .tabbed .tab-panel.active{display:block}
+  @media(max-width:680px){.tracks{grid-template-columns:1fr}.page{padding:18px}}
+  @media print{body{background:#fff}.page{box-shadow:none;max-width:none}.tabbar{display:none}.tab-panel{display:block!important}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="brief">
+  <h1>CSE475 Machine Learning — Course Project Brief</h1>
+  <div class="sub">Summer 2026: Three Project Tracks</div>
+  <div class="dept">Department of Computer Science and Engineering<br>East West University, Dhaka, Bangladesh</div>
+  <div class="attr">Raihan Ul Islam, Associate Professor, Dept. of CSE, East West University</div>
+</header>
+
+<p class="lead"><b>In one paragraph.</b> You work in a group on <em>one</em> of three tracks and take it from start to finish over six weeks. Track&nbsp;1 builds a graph neural network (GNN) on table-style data. Track&nbsp;2 turns images into graphs and runs a graph convolutional network (GCN). Track&nbsp;3 builds your own CNN with an attention part for images. Whatever the track, you do the same three tasks: (1) understand the data and read what others have done, (2) build simple baseline models and then your own proposed model, (3) improve it, explain how it makes decisions, and compare it fairly to published work. Your mark is a <b>percentage</b>, read straight off a simple grid (§8). Everything is submitted through one <b>GitHub</b> repository, with a short report at the end of every task. <em>Use the tabs below to move between sections.</em></p>
+
+<div class="tabbar" role="tablist" id="tabbar">
+  <button class="tab-btn" role="tab" data-tab="t1"><span class="n">1</span>Goal &amp; Setting</button>
+  <button class="tab-btn" role="tab" data-tab="t2"><span class="n">2</span>Three Tracks</button>
+  <button class="tab-btn" role="tab" data-tab="t3"><span class="n">3</span>Track 1 · GNN</button>
+  <button class="tab-btn" role="tab" data-tab="t4"><span class="n">4</span>Track 2 · GCN</button>
+  <button class="tab-btn" role="tab" data-tab="t5"><span class="n">5</span>Track 3 · CNN+Att</button>
+  <button class="tab-btn" role="tab" data-tab="t6"><span class="n">6</span>Rules</button>
+  <button class="tab-btn" role="tab" data-tab="t7"><span class="n">7</span>Submission</button>
+  <button class="tab-btn" role="tab" data-tab="t8"><span class="n">8</span>Marks</button>
+  <button class="tab-btn" role="tab" data-tab="t9"><span class="n">9</span>Timeline</button>
+  <button class="tab-btn" role="tab" data-tab="t10"><span class="n">10</span>References</button>
+</div>
+
+<!-- 1 GOAL -->
+<section class="tab-panel" id="t1" role="tabpanel">
+<h2>1 · Goal and Setting</h2>
+<p>Each group runs one track end to end. The work should move clearly from understanding the data, to baseline and proposed models, to a final improved model backed by explainable-AI evidence and an ablation study (turning parts of your model off to see what actually helped). Pick your dataset from the companion <em>dataset workbook</em> — it lists approved datasets per section, tagged <b>CORE</b> (use these) or <b>OVERFLOW</b> (advanced / needs sign-off), with the best track for each. State your dataset's source, size, classes, and problem type before any modeling.</p>
+<p>The three tracks are separate choices, not stages. Commit to one. The three-task rhythm is the same for all; only the data type, the model family, and the explainability tools change.</p>
+<div class="box plain">
+<span class="bt">Key terms in plain words</span>
+<ul>
+<li><b>Baseline</b> — a standard, well-known model you compare your own against.</li>
+<li><b>Related work</b> — recent papers (2022–2026) that solved a similar problem; you find five in Task&nbsp;1.</li>
+<li><b>Leakage</b> — when information from the test set sneaks into training and gives a fake-high score. Your job is to prevent it.</li>
+<li><b>Graph</b> (Tracks 1–2) — <em>nodes</em> (things) joined by <em>edges</em> (relationships between them).</li>
+<li><b>Ablation</b> — turn one part of the model off at a time to see how much it mattered.</li>
+<li><b>Explainability (XAI)</b> — showing <em>why</em> the model decided something: which features, or which parts of the image, it relied on.</li>
+<li><b>Macro-F1</b> — a score that averages every class equally, so small/rare classes still count.</li>
+</ul>
+</div>
+<h3>How the project flows</h3>
+<div class="flow">
+  <div class="step start">Choose your track &amp; dataset (from the CORE list)</div>
+  <div class="arrow">↓</div>
+  <div class="step"><span class="t">TASK 1 — Understand the data</span> (present 19–23 Jul)<br>Explore the data (EDA) → build the related-work table → state the research gap.<span class="push">push: GroupNN_Dataset_task1_*.ipynb · related_work/ · task1_report.pdf</span></div>
+  <div class="arrow">↓</div>
+  <div class="step"><span class="t">TASK 2 — Build &amp; explain your model</span> (present 26–30 Jul)<br>Run baselines → design your proposed model → <b>explain how it works in your own words</b> → first results.<span class="push">push: GroupNN_Dataset_task2_*.ipynb · task2_report.pdf</span></div>
+  <div class="arrow">↓</div>
+  <div class="step"><span class="t">TASK 3 — Improve, compare, explain</span> (present 2–6 Aug)<br>Improve via ablation → <b>compare fairly to related work</b> → explain decisions (XAI) → final report.<span class="push">push: GroupNN_Dataset_task3_*.ipynb · models/ · task3_report.pdf</span></div>
+  <div class="arrow">↓</div>
+  <div class="step end">FINAL DEMONSTRATION (9–13 Aug) — report, code, models, results, slides</div>
+</div>
+</section>
+
+<!-- 2 THREE TRACKS -->
+<section class="tab-panel" id="t2" role="tabpanel">
+<h2>2 · The three tracks at a glance</h2>
+<p>Every track runs the same three tasks; only the sub-steps differ. Pick one column and read down it.</p>
+<div class="tracks">
+  <div class="col">
+    <h4>Track 1 — GNN<br><span style="font-weight:normal;font-size:.85em">table-style data</span></h4>
+    <div class="taskcard"><span class="tt">Task 1 — Understand</span><ul><li>Data EDA (A–H)</li><li>Related-work table + gap</li></ul></div>
+    <div class="taskcard"><span class="tt">Task 2 — Build</span><ul><li>ML baselines</li><li>Graph construction</li><li>GNN model + explain</li><li>First results</li></ul></div>
+    <div class="taskcard"><span class="tt">Task 3 — Improve</span><ul><li>Ablation + tuning</li><li>Compare to related work</li><li>5-fold CV + significance test</li><li>SHAP + LIME</li><li>Final report</li></ul></div>
+  </div>
+  <div class="col">
+    <h4>Track 2 — GCN<br><span style="font-weight:normal;font-size:.85em">image → graph</span></h4>
+    <div class="taskcard"><span class="tt">Task 1 — Understand</span><ul><li>Image EDA (A–G)</li><li>Related-work table + gap</li></ul></div>
+    <div class="taskcard"><span class="tt">Task 2 — Build</span><ul><li>CNN baselines</li><li>Image → graph</li><li>GCN model + explain</li><li>First results</li></ul></div>
+    <div class="taskcard"><span class="tt">Task 3 — Improve</span><ul><li>Ablation + tuning</li><li>Compare to related work</li><li>5-fold CV + significance test</li><li>Grad-CAM / LIME / GNNExplainer</li><li>Final report</li></ul></div>
+  </div>
+  <div class="col">
+    <h4>Track 3 — CNN + Attention<br><span style="font-weight:normal;font-size:.85em">image</span></h4>
+    <div class="taskcard"><span class="tt">Task 1 — Understand</span><ul><li>Image EDA (A–G)</li><li>Related-work table + gap</li></ul></div>
+    <div class="taskcard"><span class="tt">Task 2 — Build</span><ul><li>CNN baselines</li><li>Attention model + explain</li><li>First results</li></ul></div>
+    <div class="taskcard"><span class="tt">Task 3 — Improve</span><ul><li>Ablation + tuning</li><li>Compare to related work</li><li>5-fold CV + significance test</li><li>Grad-CAM + LIME</li><li>Final report</li></ul></div>
+  </div>
+</div>
+</section>
+
+<!-- 3 TRACK 1 -->
+<section class="tab-panel" id="t3" role="tabpanel">
+<h2>3 · Track 1: GNN — Graph Neural Network on Table-Style Data</h2>
+<p>Pick a processed, feature-based dataset. The main area is <b>EEG</b> (brain-signal features). Also allowed: <b>EMG</b> (muscle-signal) gesture data, and <b>network-intrusion</b> data (e.g. Bot-IoT, TON_IoT, UNSW-NB15) — these already contain a <em>natural</em> graph (sensor channels, or computers-and-connections), which is what makes a GNN a sensible choice. State source, number of samples, number of features, classes, and problem type.</p>
+<div class="box tip"><span class="bt">When is a GNN actually the right tool?</span>A GNN helps when a real graph exists (EEG channels that connect, EMG electrodes, network hosts and their traffic). For a plain feature table with no natural links, a simple Random Forest or XGBoost is very hard to beat, and inventing a graph rarely helps — so those datasets make good <em>baselines</em> but weak GNN proposals. You are graded on a <em>justified</em> graph and an <em>honest</em> result, not on forcing a win.</div>
+<h3>Task 1 — Explore the data + Related work (present 19–23 Jul)</h3>
+<p><b>EDA (cover A–H):</b> <b>A</b> summary table (name, source, area, samples, classes, feature count/type, subjects/hosts, balance, missing values, duplicates); <b>B</b> statistics (mean, median, std, min/max, quartiles, skewness, kurtosis, outliers); <b>C</b> data quality (missing %, duplicates, near-constant and highly-correlated features, outliers, and how each affects modeling); <b>D</b> class balance (counts, bar chart, and its effect on metrics); <b>E</b> feature distributions (histograms, boxplots, violin plots; do classes separate?); <b>F</b> correlation (heatmap, redundant-feature list); <b>G</b> 2D/3D view with PCA / t-SNE / UMAP (do classes separate?); <b>H</b> interactive plots (Plotly/Bokeh/Altair) with titles and short readings.<br>
+<b>Related work:</b> five GNN papers on your area (EEG-, EMG-, or intrusion-GNN), in the table from §6.3.<br>
+<b>Deliverable (GitHub):</b> <code>code/task1/GroupNN_Dataset_task1_eda.ipynb</code> • <code>related_work/</code> • <code>report/task1/GroupNN_Dataset_task1_report.pdf</code>.</p>
+<h3>Task 2 — Baselines + your GNN (present 26–30 Jul)</h3>
+<p><b>Baselines:</b> several of Logistic Regression, SVM, k-NN, Decision Tree, Random Forest, Gradient Boosting, XGBoost/LightGBM, MLP, 1D-CNN. <b>Preprocessing:</b> subject/host-independent split, scaling, encoding, missing-value and imbalance handling, feature selection; no leakage (§6.2). <b>Baseline evaluation:</b> full metric set (§6.1) + training time; comparison table; name the baseline to beat. <b>GNN proposal:</b> (A) graph construction (nodes, edges, edge weights, node features, and why it fits); (B) an architecture diagram (input → graph → GNN layers → pooling/readout → output); (C) explain it in your own words plus settings. <b>First results:</b> compare to baselines.<br>
+<b>Deliverable (GitHub):</b> <code>code/task2/GroupNN_Dataset_task2_baselines.ipynb</code>, <code>..._task2_proposed_model.ipynb</code> • <code>report/task2/GroupNN_Dataset_task2_report.pdf</code>.</p>
+<h3>Task 3 — Improve, compare, explain (present 2–6 Aug)</h3>
+<p><b>Improve (ablation):</b> vary layers, hidden size, dropout, batch norm, LR schedule, optimizer, graph-construction method, edge weights, GNN variant (GCN/GAT/GraphSAGE), imbalance handling, early stopping. <b>Final performance:</b> final GNN vs. best baseline, first GNN, and related-work numbers (fair, leakage-free — Pillar A, §8). Report <b>5-fold CV (mean ± std)</b> and a <b>significance test</b> vs. the best baseline (§6.4). <b>Explainability (SHAP + LIME):</b> for one correct and one wrong sample.<br>
+<b>Deliverable (GitHub):</b> <code>code/task3/GroupNN_Dataset_task3_improvement_ablation.ipynb</code>, <code>..._task3_explainability.ipynb</code> • <code>models/</code> • <code>report/task3/GroupNN_Dataset_task3_report.pdf</code> (final).</p>
+</section>
+
+<!-- 4 TRACK 2 -->
+<section class="tab-panel" id="t4" role="tabpanel">
+<h2>4 · Track 2: GCN — Turn Images into Graphs</h2>
+<p>Pick an image dataset (plant disease, medical imaging, satellite, etc.) and turn each image into a graph before running a GCN. Prefer images with clear <em>regions</em> (lesions, organs, land parcels) — superpixel graphs only make sense when regions exist; plain-texture or byte-images are poor fits. State source, image count, classes, format, resolution, balance.</p>
+<h3>Task 1 — Explore the images + Related work (19–23 Jul)</h3>
+<p><b>Image EDA (A–G):</b> summary table; class balance (counts, majority-to-minority ratio); labelled sample grid (which classes look alike?); size/resolution; pixel/colour; image quality; interactive plots. <b>Related work:</b> five image-to-graph / GCN papers (table + graph-construction method + GCN type).<br>
+<b>Deliverable (GitHub):</b> <code>code/task1/GroupNN_Dataset_task1_eda.ipynb</code> • <code>related_work/</code> • <code>report/task1/GroupNN_Dataset_task1_report.pdf</code>.</p>
+<h3>Task 2 — CNN baselines + your GCN (26–30 Jul)</h3>
+<p><b>Baselines:</b> a representative 3–4 of Simple CNN, VGG16, ResNet50, DenseNet121, MobileNetV2, EfficientNet-B0/B3, InceptionV3, Xception, optional ViT. <b>Preprocessing:</b> resize, normalize, split, encode, augment, imbalance handling. <b>Baseline evaluation:</b> full metric set (§6.1) + classification report + inference time + model size. <b>Image-to-graph (the core):</b> superpixel, patch, CNN-feature, or region graph — define nodes, edges, edge weights, node features, nodes-per-image, and why it suits the data. <b>GCN architecture:</b> a diagram plus a plain-words explanation and settings. <b>First results:</b> vs. the CNN baselines.<br>
+<b>Deliverable (GitHub):</b> <code>code/task2/GroupNN_Dataset_task2_baselines.ipynb</code>, <code>..._task2_proposed_model.ipynb</code> • <code>report/task2/GroupNN_Dataset_task2_report.pdf</code>.</p>
+<h3>Task 3 — Improve, compare, explain (2–6 Aug)</h3>
+<p><b>Improve:</b> vary graph construction, nodes per image, superpixel/patch size, edges, GCN depth/width, dropout, batch norm, variant (GCN/GraphSAGE/GAT/GIN), LR schedule, imbalance handling, early stopping. <b>Final performance:</b> best baseline CNN vs. first GCN vs. final GCN vs. related work (fair, leakage-free — Pillar A, §8). Report <b>5-fold CV (mean ± std)</b> and a <b>significance test</b> vs. the best baseline (§6.4). <b>Explainability:</b> Grad-CAM, LIME at superpixel level, GNNExplainer / node-importance, for a correct and a wrong prediction. <b>Ablation:</b> e.g. CNN vs. CNN+GCN; edge weights on/off; superpixel vs. patch; GCN vs. GraphSAGE vs. GAT.<br>
+<b>Deliverable (GitHub):</b> <code>code/task3/GroupNN_Dataset_task3_improvement_ablation.ipynb</code>, <code>..._task3_explainability.ipynb</code> • <code>models/</code> • <code>report/task3/GroupNN_Dataset_task3_report.pdf</code> (final).</p>
+</section>
+
+<!-- 5 TRACK 3 -->
+<section class="tab-panel" id="t5" role="tabpanel">
+<h2>5 · Track 3: CNN + Attention — Your Own CNN that "Focuses"</h2>
+<p>Pick an image dataset and build your own CNN with an attention part (attention lets the model focus on the most useful regions or channels). State source, image count, classes, image size, format, balance.</p>
+<h3>Task 1 — Explore the images + Related work (19–23 Jul)</h3>
+<p><b>Image EDA (A–G):</b> same items as Track&nbsp;2. <b>Related work:</b> five CNN / attention / CNN-attention papers (table + attention type — spatial, channel, self-attention, hybrid).<br>
+<b>Deliverable (GitHub):</b> <code>code/task1/GroupNN_Dataset_task1_eda.ipynb</code> • <code>related_work/</code> • <code>report/task1/GroupNN_Dataset_task1_report.pdf</code>.</p>
+<h3>Task 2 — CNN baselines + your attention model (26–30 Jul)</h3>
+<p><b>Baselines:</b> same pool as Track&nbsp;2 (a representative 3–4). <b>Preprocessing:</b> resize, normalize, split, encode, augment, imbalance handling. <b>Baseline evaluation:</b> full metric set (§6.1) + classification report + training time + parameter count + model size. <b>Your model:</b> (A) an architecture diagram with the attention module clearly placed; (B) an attention type (channel, spatial, SE, CBAM, self-attention, multi-head, or hybrid) and why; (C) explain it in your own words plus settings. <b>First results:</b> does attention help?<br>
+<b>Deliverable (GitHub):</b> <code>code/task2/GroupNN_Dataset_task2_baselines.ipynb</code>, <code>..._task2_proposed_model.ipynb</code> • <code>report/task2/GroupNN_Dataset_task2_report.pdf</code>.</p>
+<h3>Task 3 — Improve, compare, explain (2–6 Aug)</h3>
+<p><b>Improve:</b> vary conv-layer count, filters, kernel size, batch norm, dropout, the attention module, LR schedule, optimizer, augmentation, fine-tuning, early stopping, input size. <b>Final performance:</b> best baseline vs. first model vs. final model vs. related work (fair, leakage-free — Pillar A, §8). Report <b>5-fold CV (mean ± std)</b> and a <b>significance test</b> vs. the best baseline (§6.4). <b>Explainability (Grad-CAM + LIME):</b> for a correct and a wrong prediction. <b>Ablation:</b> CNN without attention; channel vs. spatial vs. CBAM; dropout/batch-norm on/off; conv-block counts; augmentation on/off.<br>
+<b>Deliverable (GitHub):</b> <code>code/task3/GroupNN_Dataset_task3_improvement_ablation.ipynb</code>, <code>..._task3_explainability.ipynb</code> • <code>models/</code> • <code>report/task3/GroupNN_Dataset_task3_report.pdf</code> (final).</p>
+</section>
+
+<!-- 6 RULES -->
+<section class="tab-panel" id="t6" role="tabpanel">
+<h2>6 · Rules for Every Track</h2>
+<h3>6.1 Reporting and figures</h3>
+<p>Every result must be explained, not just shown. Accuracy alone is never enough: report precision, recall, F1-score, macro- and weighted-averages, a confusion matrix, ROC curves with AUC, and precision–recall curves (use one-vs-rest for multiclass). Every figure needs a title, axis labels, a legend where useful, and a one- or two-line reading of what it shows. Use tables for any comparison between models.</p>
+<h3>6.2 Data integrity — keeping your scores honest (mandatory)</h3>
+<p>These are graded. Breaking them costs the affected marks and any bonus.</p>
+<div class="box guard">
+<span class="bt">Do this, or your scores are not trustworthy</span>
+<ul>
+<li><b>Split by subject / source, not at random.</b> If several rows come from the same person, patient, recording session, or host, keep them all on one side of the split. A random split lets the model recognise the <em>person</em> instead of the <em>class</em>, which gives a fake-high score.</li>
+<li><b>Build the graph after you split</b> (Tracks 1–2). If you build a graph using the whole dataset and then split, test information leaks in through the connections.</li>
+<li><b>Remove ID-like columns</b> (network-flow data such as Bot-IoT / TON_IoT / UNSW-NB15): do not feed packet IDs, timestamps, or raw IP/port numbers to the model; they let it "memorise" the trace. Split by time or by host.</li>
+<li><b>On imbalanced data, judge by macro-F1 and per-class recall,</b> not overall accuracy.</li>
+<li><b>Malware byte-images:</b> they classify well, but Grad-CAM/LIME on them means little (no real "regions" to point at). Say this instead of inventing an explanation.</li>
+</ul>
+</div>
+<h3>6.3 Related-work table (Task 1)</h3>
+<p>Review at least five papers from 2022–2026 in a table. <b>Shared columns:</b> title • authors • year • dataset • application area • method/model • metrics • strengths • limitations • research gap • relation to your work. <b>Track&nbsp;1 adds</b> the type of GNN; <b>Track&nbsp;2 adds</b> the graph-construction method and GCN type; <b>Track&nbsp;3 adds</b> the attention type. These are the numbers you will later compare your own model against.</p>
+<h3>6.4 Cross-validation and significance testing (required in Task 3)</h3>
+<p>A single train/test split can win or lose by luck. In the final Task&nbsp;3 report you must show that your result is <em>stable</em> and that your model's gain over the best baseline is <em>real</em>, not noise.</p>
+<ul>
+<li><b>Use 5-fold cross-validation</b> and report each metric as <em>mean ± standard deviation</em> across the folds — not one number. The folds must respect data origin (the same rule as §6.2): <b>group by subject</b> for EEG/EMG, <b>by host or time</b> for network-intrusion data, and <b>stratify</b> for imbalanced image data, so no subject/host leaks across folds.</li>
+<li><b>Run a significance test</b> that your model beats the best baseline, using the one that fits your data (table below). Report the test name, its statistic, and the <em>p</em>-value, and state significance at α = 0.05.</li>
+</ul>
+<table>
+<tr><th>Your data</th><th>5-fold scheme</th><th>Test to compare two models</th></tr>
+<tr><td>EEG / EMG (multi-subject, tabular)</td><td>Subject-wise (grouped) folds; leave-subjects-out if few subjects</td><td><b>Wilcoxon signed-rank</b> across folds (or paired <em>t</em>-test)</td></tr>
+<tr><td>Network-intrusion (large, tabular)</td><td>Time- or host-based split; folds optional (data is huge)</td><td><b>McNemar</b> on the large held-out test set</td></tr>
+<tr><td>Image, deep CNN/GCN (5 runs costly)</td><td>Stratified folds if affordable, else one fixed stratified test set</td><td><b>McNemar</b> on the held-out test set; Wilcoxon across folds if you did run CV</td></tr>
+<tr><td>Comparing 3+ models at once</td><td>—</td><td>Friedman test + Nemenyi post-hoc</td></tr>
+</table>
+<p><b>Two things students get wrong.</b> <b>(1)</b> McNemar compares <em>two models on the same test samples</em> (paired) — so it tells you whether <em>your</em> model beats <em>your</em> baseline, but it <em>cannot</em> test your model against a paper's reported number (you never see that paper's per-sample predictions). <b>(2)</b> With 5-fold CV you have 5 paired scores, so the natural test is <b>Wilcoxon signed-rank</b>; McNemar needs the raw per-sample predictions on one shared test set, not fold averages. Pick the test that matches what you actually have.</p>
+<h3>6.5 Understanding your method (Task 2, graded)</h3>
+<p>In your Task&nbsp;2 report, explain <em>in your own words</em> (not copied from a paper): what your model does, step by step; why each part is there; and why it should do better than the baselines. A short diagram plus a plain-language walkthrough is what we are looking for. This is <em>Pillar B</em> of the mark (§8) — the four questions there — and is often checked briefly in the presentation.</p>
+</section>
+
+<!-- 7 SUBMISSION -->
+<section class="tab-panel" id="t7" role="tabpanel">
+<h2>7 · Submission — one GitHub repository</h2>
+<p>Everything lives in a single GitHub repo. Three main folders: <code>report/</code>, <code>code/</code>, and <code>related_work/</code>. Inside <code>report/</code> and <code>code/</code> there is one folder per task. A short report is due at the end of <em>every</em> task. <b>Every file name starts with your group number and dataset</b>: <code>Group03_HAM10000_...</code> (use your own group number and a short dataset slug). Suggested layout:</p>
+<div class="tree">Group03_HAM10000_CSE475/          <span class="c"># repo = GroupNN_Dataset_CSE475</span>
+  README.md                       <span class="c"># group, dataset, track, how to run, results</span>
+  report/
+    task1/Group03_HAM10000_task1_report.pdf
+    task2/Group03_HAM10000_task2_report.pdf
+    task3/Group03_HAM10000_task3_report.pdf   <span class="c"># final</span>
+  code/
+    task1/Group03_HAM10000_task1_eda.ipynb
+    task2/Group03_HAM10000_task2_baselines.ipynb
+    task2/Group03_HAM10000_task2_proposed_model.ipynb
+    task3/Group03_HAM10000_task3_improvement_ablation.ipynb
+    task3/Group03_HAM10000_task3_explainability.ipynb
+  related_work/
+    Group03_HAM10000_related_work_table.pdf   <span class="c"># 5-paper table</span>
+    papers/                       <span class="c"># the 5 paper PDFs</span>
+  models/Group03_HAM10000_best.pth  <span class="c"># + checkpoint, label_map.json</span></div>
+<p>Each task report should be short and follow the task: <b>Task 1</b> — what the data looks like and the gap you found; <b>Task 2</b> — baselines, your model, and how it works; <b>Task 3</b> — what you changed, the fair comparison to related work, the 5-fold CV and significance test, and what the model paid attention to.</p>
+</section>
+
+<!-- 8 MARKS -->
+<section class="tab-panel" id="t8" role="tabpanel">
+<h2>8 · Marks — how your grade is built</h2>
+<p>Your mark is a percentage set by two things only: <b>Pillar A</b>, how your final model compares to the best related-work result (fairly, with no leakage); and <b>Pillar B</b>, how well your group explains its own model. Find your row and column in the grid — that cell is your mark. Understanding matters as much as the number.</p>
+<h3>Pillar A — result vs. the best related-work result</h3>
+<p>Compare your final model to the strongest of your five related-work papers, <em>on the same dataset, with a fair, leakage-free comparison.</em></p>
+<ul>
+<li><b>Beat</b> — your model scores higher than the best comparable paper.</li>
+<li><b>Match</b> — about the same (a small margin either way).</li>
+<li><b>Below</b> — lower than the best comparable paper.</li>
+</ul>
+<h3>Pillar B — how well you explain your model</h3>
+<p>Four questions. Count how many your group answers <b>clearly</b> — in your own words and correct. A copied, vague, or wrong answer does <em>not</em> count.</p>
+<ol>
+<li>You explain the model step by step in your own words.</li>
+<li>You justify each design choice (why this graph / attention / layer).</li>
+<li>You argue why it should beat the baselines.</li>
+<li>You give an honest reading of results — what worked, what didn't, and why.</li>
+</ol>
+<p><b>4 answered = Strong &nbsp;•&nbsp; 2–3 = Medium &nbsp;•&nbsp; 0–1 = Weak.</b></p>
+<h3>Your mark (the grid)</h3>
+<table class="grid">
+<tr><td class="rh">Result ↓ / Explanation →</td><th>Strong (4/4)</th><th>Medium (2–3)</th><th>Weak (0–1)</th></tr>
+<tr><td class="rh">Beat</td><td class="best">80%</td><td class="cell">75%</td><td class="cell">70%</td></tr>
+<tr><td class="rh">Match</td><td class="cell">65%</td><td class="cell">60%</td><td class="cell">55%</td></tr>
+<tr><td class="rh">Below</td><td class="cell">50%</td><td class="cell">45%</td><td class="cell">40%</td></tr>
+</table>
+<div class="box guard">
+<span class="bt">Two rules underneath the grid</span>
+<ul>
+<li><b>Completion floor — 40%.</b> Finishing all three tasks honestly, with a leakage-free split, earns <b>at least 40%</b>, even if your model loses and the explanation is thin. Honest effort cannot fail.</li>
+<li><b>Leakage void — below 40%.</b> A result that "beats" or "matches" through <b>leakage</b>, an <b>unfair comparison</b>, or an <b>easier dataset</b> scores <b>below 40%</b>, and the floor does <em>not</em> apply. An honest model that loses is worth more than a mysterious model that wins.</li>
+</ul>
+</div>
+<h3>Graph bonus (GNN and GCN only)</h3>
+<p>The graph tracks are harder, so a <em>real, tested</em> graph earns extra — added on the same 5-point steps.</p>
+<table>
+<tr><th>Track</th><th>Bonus</th><th>Earned only by</th></tr>
+<tr><td><b>GNN</b> (table → graph)</td><td>+10%</td><td>A genuine graph (real nodes/edges), built <em>after</em> the split, with an ablation showing it actually helped — not for merely being on the track.</td></tr>
+<tr><td><b>GCN</b> (image → graph)</td><td>+5%</td><td>Same test: a real, justified graph with an ablation that shows its effect.</td></tr>
+<tr><td><b>CNN + Attention</b></td><td>0</td><td>No graph, so no graph bonus.</td></tr>
+</table>
+<p>The bonus is in percentage points, capped at <b>80%</b>. A <b>Below</b>-result group cannot be bonused past <b>55%</b> — the bonus rewards a hard, working graph, it does not rescue a weak result.</p>
+<div class="box tip">
+<span class="bt">Worked examples</span>
+<ul>
+<li>Beat + Strong = <b>80%</b>.</li>
+<li>Match + Strong = 65%; with a real GCN graph +5 = <b>70%</b>.</li>
+<li>Beat + Weak = 70%; with a real GNN graph +10 → capped at <b>80%</b>.</li>
+<li>Below + Medium = 45%; honest completion keeps you at or above the <b>40%</b> floor.</li>
+<li>"99%" from a leaked split → Pillar A voided, <b>below 40%</b>.</li>
+</ul>
+</div>
+</section>
+
+<!-- 9 TIMELINE -->
+<section class="tab-panel" id="t9" role="tabpanel">
+<h2>9 · Timeline</h2>
+<table>
+<tr><th>Milestone</th><th>Date</th><th>What happens</th></tr>
+<tr><td>Project information</td><td>5–10 Jul 2026</td><td>Tracks, rules, groups, timeline shared.</td></tr>
+<tr><td>Discussion &amp; Task 1 brief</td><td>12–16 Jul 2026</td><td>Guidelines and Q/A.</td></tr>
+<tr><td>Task 1 due &amp; Task 2 brief</td><td>19–23 Jul 2026</td><td>Present EDA + related work; Task 2 explained.</td></tr>
+<tr><td>Task 2 due &amp; Task 3 brief</td><td>26–30 Jul 2026</td><td>Present baselines + first model; Task 3 explained.</td></tr>
+<tr><td>Task 3 due &amp; final suggestions</td><td>2–6 Aug 2026</td><td>Present improved results, XAI, ablation, CV + significance test.</td></tr>
+<tr><td>Final demonstration</td><td>9–13 Aug 2026</td><td>Full project: report, code, models, results, slides.</td></tr>
+</table>
+</section>
+
+<!-- 10 REFERENCES -->
+<section class="tab-panel" id="t10" role="tabpanel">
+<h2>10 · Starter References</h2>
+<ol>
+<li>T. N. Kipf and M. Welling, "Semi-supervised classification with graph convolutional networks," ICLR, 2017. arXiv:1609.02907.</li>
+<li>P. Veličković et al., "Graph attention networks," ICLR, 2018. arXiv:1710.10903.</li>
+<li>W. Hamilton, Z. Ying, and J. Leskovec, "Inductive representation learning on large graphs (GraphSAGE)," NeurIPS, 2017. arXiv:1706.02216.</li>
+<li>K. Xu et al., "How powerful are graph neural networks? (GIN)," ICLR, 2019. arXiv:1810.00826.</li>
+<li>W. W. Lo et al., "E-GraphSAGE: A GNN-based intrusion detection system for IoT," IEEE/IFIP NOMS, 2022. arXiv:2103.16329.</li>
+<li>R. Ying et al., "GNNExplainer: Generating explanations for graph neural networks," NeurIPS, 2019. arXiv:1903.03894.</li>
+<li>J. Hu, L. Shen, and G. Sun, "Squeeze-and-excitation networks," CVPR, 2018. arXiv:1709.01507.</li>
+<li>S. Woo et al., "CBAM: Convolutional block attention module," ECCV, 2018. arXiv:1807.06521.</li>
+<li>R. R. Selvaraju et al., "Grad-CAM: Visual explanations via gradient-based localization," ICCV, 2017. arXiv:1610.02391.</li>
+<li>L. Nataraj et al., "Malware images: visualization and automatic classification," VizSec, 2011.</li>
+<li>M. T. Ribeiro, S. Singh, and C. Guestrin, "'Why should I trust you?': Explaining the predictions of any classifier (LIME)," KDD, 2016. arXiv:1602.04938.</li>
+<li>S. M. Lundberg and S.-I. Lee, "A unified approach to interpreting model predictions (SHAP)," NeurIPS, 2017. arXiv:1705.07874.</li>
+<li>T. G. Dietterich, "Approximate statistical tests for comparing supervised classification learning algorithms," Neural Computation, 1998. <span style="color:var(--gray)">(McNemar / 5×2cv)</span></li>
+<li>J. Demšar, "Statistical comparisons of classifiers over multiple data sets," JMLR, 2006. <span style="color:var(--gray)">(Friedman + Nemenyi)</span></li>
+<li>L. van der Maaten and G. Hinton, "Visualizing data using t-SNE," JMLR, vol. 9, 2008.</li>
+<li>L. McInnes, J. Healy, and J. Melville, "UMAP," arXiv:1802.03426, 2018.</li>
+</ol>
+</section>
+
+<div class="footer">
+  <span>Raihan Ul Islam, Associate Professor, Dept. of CSE, East West University</span>
+  <span>CSE475 · Summer 2026</span>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var wrap = document.querySelector('.page');
+  wrap.classList.add('tabbed');
+  var btns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.tab-panel'));
+  function show(id){
+    panels.forEach(function(p){ p.classList.toggle('active', p.id===id); });
+    btns.forEach(function(b){ b.setAttribute('aria-selected', b.dataset.tab===id ? 'true':'false'); });
+  }
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      show(b.dataset.tab);
+      if(location.hash!=='#'+b.dataset.tab){ history.replaceState(null,'','#'+b.dataset.tab); }
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  var start = (location.hash && document.getElementById(location.hash.slice(1))) ? location.hash.slice(1) : 't1';
+  show(start);
+})();
+</script>
+</body>
+</html>
